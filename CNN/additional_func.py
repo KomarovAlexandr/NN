@@ -15,7 +15,7 @@ def load_data():
         cv2.waitKey(1)
 
         img = cv2.threshold(img, 110, 255, cv2.THRESH_BINARY_INV)[1]
-        kernel = np.ones((3, 3), 'uint8')
+        kernel = np.ones((5, 5), 'uint8')
         img = cv2.dilate(img, kernel)
         img = cv2.blur(img, ksize=(3, 3))
 

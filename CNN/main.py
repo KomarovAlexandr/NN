@@ -18,23 +18,32 @@ import additional_func as af
 
 
 data = np.array(af.load_data())
-for i in range(9):
+for i in range(0, 9):
     plt.subplot(330 + 1 + i)
-    plt.imshow(data[i], cmap=plt.get_cmap('gray'))
+    plt.imshow(data[i+1], cmap=plt.get_cmap('gray'))
 plt.figure()
-data = data.reshape(data.shape[0], 28,28, 1).astype(float) / 255.0
+data = data.reshape(data.shape[0], 28, 28, 1).astype(float) / 255.0
 
 for i in range(0, 10):
     scaleKoef = 1.0 / np.max(data[i])
     data[i] = data[i] * scaleKoef
 
+Nine_index = [4, 22, 33, 43, 45, 48, 54, 57, 87, 110]
+data_1 = []
 
 # Загрузка база
 (trainX, trainy), (testX, testy) = mnist.load_data()
-
-for i in range(9):
-   plt.subplot(330 + 1 + i)
-   plt.imshow(trainX[i], cmap=plt.get_cmap('gray'))
+# 4 22 33 43 45 48 54 57 87 110
+for i in range(0, 9):
+    plt.subplot(330 + 1 + i)
+    #plt.imshow(trainX[i], cmap=plt.get_cmap('gray'))
+    data_1.append(trainX[Nine_index[i]])
+    plt.imshow(data_1[i], cmap=plt.get_cmap('gray'))
+data_1.append(trainX[Nine_index[9]])
+# plt.subplot(330 + 1 + 0)
+# plt.imshow(data[9], cmap=plt.get_cmap('gray'))
+# plt.subplot(330 + 1 + 1)
+# plt.imshow(data_1[9], cmap=plt.get_cmap('gray'))
 plt.show()
 
 # Вывод размерности данных
@@ -55,30 +64,26 @@ testX = testX / 255.0
 trainy = keras.utils.to_categorical(trainy, classSize)
 testy = keras.utils.to_categorical(testy, classSize)
 
+data_1 = np.array(data_1)
+data_1 = data_1.reshape(data_1.shape[0], imageSize_X, imageSize_Y, 1)
+data_1.astype('float32')
+data_1 = data_1 / 255.0
+
 
 model = Sequential()
-# model.add(Dense(imageSize_X*imageSize_Y, kernel_initializer='normal', activation='relu', input_shape=(imageSize_X*imageSize_Y)))
-# model.add(Dense(200, activation='softmax'))
-# model.add(Dense(classSize, kernel_initializer='normal', activation='softmax'))
-model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', input_shape=(imageSize_X, imageSize_Y, 1)))
+model.add(Conv2D(30, (5, 5), activation='relu', input_shape=(imageSize_X, imageSize_Y, 1)))
 model.add(MaxPooling2D((2, 2)))
+model.add(Conv2D(15, (3, 3), activation='relu', input_shape=(imageSize_X, imageSize_Y, 1)))
+model.add(MaxPooling2D((2, 2)))
+model.add(Dropout(0.2))
 model.add(Flatten())
-model.add(Dense(100, activation='relu', kernel_initializer='he_uniform'))
+model.add(Dense(128, activation='relu'))
 model.add(Dense(10, activation='softmax'))
-opt = SGD(lr=0.01, momentum=0.9)
-model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
-# model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-"""
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-loss = categorical_crossentropy
-		mse
-		binary_crossentropy
-optimizer = 'adam'
-			'sgd'
-"""
+
 print(model.summary())
 print("Model Fit ...")
-model.fit(trainX, trainy, epochs=8, batch_size=10,
+model.fit(trainX, trainy, epochs=10, batch_size=100,
 					verbose=1, validation_data=(testX, testy))
 print("Model Predict ...")
 predict = model.predict(data)
@@ -98,5 +103,5 @@ for i in range(0, 10):
 					pred[6],
 					pred[7],
 					pred[8],
-					pred[9],])
+					pred[9]])
 print(t)
