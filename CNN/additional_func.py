@@ -5,7 +5,9 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from matplotlib import pyplot as plt
 
-
+"""
+Загрузка данных для теста. Может быть базой из 10 изображений или одним тестовым изображением.
+"""
 def load_data(shape, oneImage = 1, showFlag = 0):
     data = []
     if oneImage:
@@ -61,6 +63,9 @@ def load_data(shape, oneImage = 1, showFlag = 0):
     return data
 
 
+"""
+Создание модели и вовзврат
+"""
 def getModel(shape):
     model = Sequential()
     model.add(Conv2D(30, (5, 5), activation='relu', input_shape=shape))

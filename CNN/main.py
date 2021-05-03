@@ -17,9 +17,9 @@ loadModelFlag = 1
 # Сохранение модели
 saveModelFlag = 0
 # Тест на произвольном изображении - 0, Тест на базе из 10 изображений от 0 до 9
-freeImageTestFlag = 0
+freeImageTestFlag = 1
 # Флаг отображения загруженных данных и данных для теста
-showFlag = 0
+showFlag = 1
 
 # Загрузка
 (trainX, trainy), (testX, testy) = mnist.load_data()
@@ -39,6 +39,7 @@ shape = (imageSize_X, imageSize_Y, 1)
 # Размерность выходного слоя
 classSize = 10
 
+# Загрузка тестовых данных
 testData = af.load_data(shape, oneImage=freeImageTestFlag, showFlag=showFlag)
 
 # Подготовка данных
@@ -48,6 +49,7 @@ testX = testX.reshape(testX.shape[0], shape[0], shape[1], shape[2]).astype(float
 trainy = keras.utils.to_categorical(trainy, classSize)
 testy = keras.utils.to_categorical(testy, classSize)
 
+# Получение модели из сохраненной или создание новой и ее обучение
 if loadModelFlag:
 	print("Load model ...")
 	model = tf.keras.models.load_model('model')
@@ -59,9 +61,12 @@ else:
 	print("Model Fit ...")
 	model.fit(trainX, trainy, epochs=10, batch_size=100, verbose=1, validation_data=(testX, testy))
 
+# Предсказание
 print("Model Predict ...")
 predict = model.predict(testData)
 
+# Если предсказывали по базе изображений из 10 картинок, то строим табличку,
+# иначе выводим значение для одной тестовой картинки
 if freeImageTestFlag:
 	table = PrettyTable(['Numb', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
 	for i in range(0, 10):
@@ -80,5 +85,6 @@ else:
 			predictNumber = i
 	print("This is", predictNumber, "  ", percent * 100, "%")
 
+# Если надо, сохраняем модель
 if saveModelFlag:
 	model.save('model')
